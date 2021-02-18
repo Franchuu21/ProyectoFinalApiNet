@@ -28,5 +28,11 @@ namespace ProyectoFinalApi.Controllers
         {
             
         }
+
+        private int[] ordenar(int[] array1) 
+        {
+            //array1.OrderBy(i => i).ToArray();
+            //array1
+        }
     }
 }
