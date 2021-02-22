@@ -16,91 +16,54 @@ namespace ProyectoFinalApi.Data
         {
             //el using en una sola linea nos marca que dura todo el metodo y cuando termina, cierra la conexio
             using var con = new SqlConnection(ConnectionString.Value);
-            int filasAfectadas = await con.ExecuteAsync("Delete from Productos where Id=@productId",new { productoId });
+            con.Open();
+            int filasAfectadas = await con.ExecuteAsync("Delete from Productos where Id=@productId", new { productoId });
         }
 
         //  Obtener un producto 
         public async Task<Producto> GetProducto(int productoId)
         {
             using var con = new SqlConnection(ConnectionString.Value);
-            return await con.QueryFirstAsync<Producto>($"Select * from Productos where Id=@productId", new { productoId });
+            con.Open();
+            return await con.QueryFirstAsync<Producto>("Select * from Productos where Id=@productId", new { productoId });
         }
 
         //  Obtener todos los productos
         public async Task<IEnumerable<Producto>> GetProductos()
         {
             using var con = new SqlConnection(ConnectionString.Value);
-            return await con.QueryAsync<Producto>($"Select * from Productos");
+            con.Open();
+            return await con.QueryAsync<Producto>("Select * from Productos");
         }
 
         //  Insert
         public async void InsertProducto(Producto producto)
         {
-            try
-            {
-                using var con = new SqlConnection(ConnectionString.Value);
-                con.Open();
-                var transaction = con.BeginTransaction();
-                try
-                {
-                    var param = new DynamicParameters();
-                    param.Add("@Name", product.Name);
-                    param.Add("@Quantity", product.Quantity);
-                    param.Add("@Color", product.Color);
-                    param.Add("@Price", product.Price);
-                    param.Add("@ProductCode", product.ProductCode);
-                    var result = con.Execute("Usp_Insert_Product", param, transaction, 0, CommandType.StoredProcedure);
-                    if (result > 0)
-                    {
-                        transaction.Commit();
-                    }
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //el using es que para cuando termina el metodo se hace DISPOSE y cierre de la conexion
+            using var con = new SqlConnection(ConnectionString.Value);
+            con.Open();
+            int filasAfectadas = await con.ExecuteAsync("Insert into Productos values (@Nombre,@Descripcion,@FechaVencimiento)"
+                , new { producto.Nombre, producto.Descripcion, producto.FechaVencimiento });
         }
 
         // Update
-        public void UpdateProduct(Product product)
+        public async void UpdateProducto(Producto producto)
         {
-            using var con = new SqlConnection(ShareConnectionString.Value);
+            //el using es que para cuando termina el metodo se hace DISPOSE y cierre de la conexion
+            using var con = new SqlConnection(ConnectionString.Value);
             con.Open();
-            var transaction = con.BeginTransaction();
-            try
-            {
-                var param = new DynamicParameters();
-                param.Add("@Name", product.Name);
-                param.Add("@Quantity", product.Quantity);
-                param.Add("@Color", product.Color);
-                param.Add("@Price", product.Price);
-                param.Add("@ProductCode", product.ProductCode);
-                param.Add("@ProductId", product.ProductId);
-                var result = con.Execute("Usp_Update_Product", param, transaction, 0, CommandType.StoredProcedure);
-                if (result > 0)
-                {
-                    transaction.Commit();
-                }
-            }
-            catch (Exception)
-            {
-                transaction.Rollback();
-            }
+            int filasAfectadas = await con.ExecuteAsync("Update Productos Set Nombre=@Nombre, Descripcion=@Descripcion, " +
+                "FechaVencimiento=@FechaVencimiento"
+                , new { producto.Nombre, producto.Descripcion, producto.FechaVencimiento });
         }
 
         // Check Product Exists
-        public bool CheckProductExists(int productId)
+        public async Task<IEnumerable<Producto>> GetByFechas(DateTime fechaDesde, DateTime fechaHasta)
         {
-            using var con = new SqlConnection(ShareConnectionString.Value);
-            var param = new DynamicParameters();
-            param.Add("@ProductId", productId);
-            var result = con.Query<bool>("Usp_CheckProductExists", param, null, false, 0, CommandType.StoredProcedure).FirstOrDefault();
-            return result;
-        }
+            //el using es que para cuando termina el metodo se hace DISPOSE y cierre de la conexion
+            using var con = new SqlConnection(ConnectionString.Value);
+            con.Open();
+
+        } 
     }
 }
