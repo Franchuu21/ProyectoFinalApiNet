@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using ProyectoFinalApi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,9 @@ namespace ProyectoFinalApi
             //Obtengo el string de conexión a la base de datos
             var connection = Configuration.GetConnectionString("DatabaseConnection");
             ConnectionString.Value = connection;
+
+            // Registro mi clases DATA para quienes lo quieran usar
+            services.AddTransient<ProductoData>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

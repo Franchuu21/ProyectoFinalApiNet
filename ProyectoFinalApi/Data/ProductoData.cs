@@ -14,55 +14,50 @@ namespace ProyectoFinalApi.Data
         // Delete
         public async void DeleteProducto(int productoId)
         {
-            //el using en una sola linea nos marca que dura todo el metodo y cuando termina, cierra la conexio
+            //el using en una sola linea nos marca que dura todo el metodo y cuando termina, cierra la conexion
             using var con = new SqlConnection(ConnectionString.Value);
-            con.Open();
-            int filasAfectadas = await con.ExecuteAsync("Delete from Productos where Id=@productId", new { productoId });
+            int filasAfectadas = await con.ExecuteAsync("Delete from Productos where Id=@ProductoId", new { ProductoId=productoId });
         }
 
         //  Obtener un producto 
         public async Task<Producto> GetProducto(int productoId)
         {
             using var con = new SqlConnection(ConnectionString.Value);
-            con.Open();
-            return await con.QueryFirstAsync<Producto>("Select * from Productos where Id=@productId", new { productoId });
+            return await con.QueryFirstAsync<Producto>("Select * from Productos where Id=@ProductoId", new { ProductoId = productoId });
         }
 
         //  Obtener todos los productos
         public async Task<IEnumerable<Producto>> GetProductos()
         {
             using var con = new SqlConnection(ConnectionString.Value);
-            con.Open();
             return await con.QueryAsync<Producto>("Select * from Productos");
         }
 
         //  Insert
-        public async void InsertProducto(Producto producto)
+        public async Task<int> InsertProducto(Producto producto)
         {
-            //el using es que para cuando termina el metodo se hace DISPOSE y cierre de la conexion
             using var con = new SqlConnection(ConnectionString.Value);
-            con.Open();
-            int filasAfectadas = await con.ExecuteAsync("Insert into Productos values (@Nombre,@Descripcion,@FechaVencimiento)"
-                , new { producto.Nombre, producto.Descripcion, producto.FechaVencimiento });
+            int filasAfectadas = await con.ExecuteAsync("Insert into Productos values (@Nombre,@Descripcion,@FechaVencimiento, @Precio)"
+                , new { producto.Nombre, producto.Descripcion, producto.FechaVencimiento, producto.Precio });
+            return filasAfectadas;
         }
 
         // Update
-        public async void UpdateProducto(Producto producto)
+        public async Task<int> UpdateProducto(Producto producto)
         {
-            //el using es que para cuando termina el metodo se hace DISPOSE y cierre de la conexion
             using var con = new SqlConnection(ConnectionString.Value);
-            con.Open();
             int filasAfectadas = await con.ExecuteAsync("Update Productos Set Nombre=@Nombre, Descripcion=@Descripcion, " +
-                "FechaVencimiento=@FechaVencimiento"
-                , new { producto.Nombre, producto.Descripcion, producto.FechaVencimiento });
+                "FechaVencimiento=@FechaVencimiento, Precio=@Precio"
+                , new { producto.Nombre, producto.Descripcion, producto.FechaVencimiento, producto.Precio });
+            return filasAfectadas;
         }
 
-        // Check Product Exists
+        // Obtener por rango fechas
         public async Task<IEnumerable<Producto>> GetByFechas(DateTime fechaDesde, DateTime fechaHasta)
         {
-            //el using es que para cuando termina el metodo se hace DISPOSE y cierre de la conexion
             using var con = new SqlConnection(ConnectionString.Value);
-            con.Open();
+            return await con.QueryAsync<Producto>("Select * from Productos Where FechaVencimiento " +
+                "between @FechaDesde and @FechaHasta",new { FechaDesde=fechaDesde, FechaHasta=fechaHasta});
 
         } 
     }
