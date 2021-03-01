@@ -74,10 +74,10 @@ namespace ProyectoFinalApi.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult> Put(Producto producto)
         {
-            if (producto.Id>0)//Nos tiene que llegar el objeto correctamente
+            if (producto.Id<=0)//Nos tiene que llegar el objeto correctamente
             {
                 return BadRequest("El id del producto es incorrecto.");
             }

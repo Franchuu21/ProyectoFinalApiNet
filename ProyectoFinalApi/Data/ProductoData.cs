@@ -23,7 +23,7 @@ namespace ProyectoFinalApi.Data
         public async Task<Producto> GetProducto(int productoId)
         {
             using var con = new SqlConnection(ConnectionString.Value);
-            return await con.QueryFirstAsync<Producto>("Select * from Productos where Id=@ProductoId", new { ProductoId = productoId });
+            return await con.QueryFirstOrDefaultAsync<Producto>("Select * from Productos where Id=@ProductoId", new { ProductoId = productoId });
         }
 
         //  Obtener todos los productos
@@ -47,8 +47,8 @@ namespace ProyectoFinalApi.Data
         {
             using var con = new SqlConnection(ConnectionString.Value);
             int filasAfectadas = await con.ExecuteAsync("Update Productos Set Nombre=@Nombre, Descripcion=@Descripcion, " +
-                "FechaVencimiento=@FechaVencimiento, Precio=@Precio"
-                , new { producto.Nombre, producto.Descripcion, producto.FechaVencimiento, producto.Precio });
+                "FechaVencimiento=@FechaVencimiento, Precio=@Precio Where Id=@Id"
+                , new { producto.Nombre, producto.Descripcion, producto.FechaVencimiento, producto.Precio, producto.Id });
             return filasAfectadas;
         }
 
@@ -58,7 +58,6 @@ namespace ProyectoFinalApi.Data
             using var con = new SqlConnection(ConnectionString.Value);
             return await con.QueryAsync<Producto>("Select * from Productos Where FechaVencimiento " +
                 "between @FechaDesde and @FechaHasta",new { FechaDesde=fechaDesde, FechaHasta=fechaHasta});
-
-        } 
+        }
     }
 }
