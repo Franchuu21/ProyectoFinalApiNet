@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using ProyectoFinalApi.Data;
 using ProyectoFinalApi.Models;
 using System;
@@ -26,7 +27,14 @@ namespace ProyectoFinalApi.Controllers
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            return Ok(await _productoData.GetProductos());
+            try
+            {
+                return Ok(await _productoData.GetProductos());
+            }
+            catch (Exception) 
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error al obtener los productos");
+            }
         }
 
         /// <summary>

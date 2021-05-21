@@ -31,7 +31,16 @@ namespace ProyectoFinalApi
             //Obtengo el string de conexión a la base de datos
             var connection = Configuration.GetConnectionString("DatabaseConnection");
             ConnectionString.Value = connection;
-
+            
+            // Add service and create Policy with options
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+            });
+            
             // Registro mi clases DATA para quienes lo quieran usar
             services.AddTransient<ProductoData>();
 
@@ -51,6 +60,8 @@ namespace ProyectoFinalApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProyectoFinalApi v1"));
             }
+
+            app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
 
