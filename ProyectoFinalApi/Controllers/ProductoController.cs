@@ -54,14 +54,16 @@ namespace ProyectoFinalApi.Controllers
             return Ok(producto);
         }
 
+
         /// <summary>
         /// Obtener producto por rango de fecha de vencimiento
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="fechaDesde"></param>
+        /// <param name="fechaHasta"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("{fechaDesde}/{fechaHasta}")]
-        public async Task<ActionResult> Get(DateTime fechaDesde, DateTime fechaHasta)
+        [Route("GetByFechas")]
+        public async Task<ActionResult> GetByFechas([FromQuery]DateTime fechaDesde, [FromQuery] DateTime fechaHasta)
         {
             IEnumerable<Producto> productos = await _productoData.GetByFechas(fechaDesde,fechaHasta);
             if (productos.Count() == 0)
